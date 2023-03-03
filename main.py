@@ -1,6 +1,7 @@
 import tkinter as tk
-from tkinter.scrolledtext import ScrolledText
 import math
+from tkinter.scrolledtext import ScrolledText
+
 import tkinter.ttk as ttk
 from tkinter import font as tkfont
 from tkinter import filedialog as fd
@@ -44,7 +45,6 @@ class Thread2(threading.Thread):
 
 
 class App(tk.Tk):
-    
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
@@ -69,29 +69,9 @@ class App(tk.Tk):
 
 
 class klasa_cokolwiek(tk.Frame):
-
-
     def __init__(self, parent, controller, address=1):
 
-        self.LENGTH = 300 # Długość nici wahadła
-        self.RADIUS = 5   # Promień kuli wahadła
-        self.GRAVITY = 0.981 # Przyspieszenie ziemskie
-        self.czas=[x for x in range(0, 100000)]
-        self.kat_poczatkowy=math.pi/4
-        self.theta=self.kat_poczatkowy*math.cos(math.sqrt(self.GRAVITY/self.LENGTH)*self.czas[0])
-        self.x0=250
-        self.y0=10
-        self.root = tk.Tk()
-        self.root.title("Animacja wahadła")
-
-        # Ustawienia dla płótna, na którym będzie rysowane wahadło
-        self.canvas = tk.Canvas(self.root, width=500, height=400, bg='white')
-        self.canvas.pack()
-
-        # Utworzenie kuli reprezentującej wahadło
-        self.ball = self.canvas.create_oval(250-self.RADIUS, 100-self.RADIUS, 250+self.RADIUS, 100+self.RADIUS, fill='blue')
-        self.ceil = self.canvas.create_rectangle(230, 10, 270, 11, fill='black')
-        self.rod = self.canvas.create_line(250, 10, 250, 310)
+        
 
         tk.Frame.__init__(self,parent,height=1080,width=1920)
         self.parent = parent
@@ -227,14 +207,41 @@ class klasa_cokolwiek(tk.Frame):
     #def anim_setup(self):
         
     
-    def animacja(self):
-         
+    def animacja_setup(self):
+        LENGTH = 300 # Długość nici wahadła
+        RADIUS = 5   # Promień kuli wahadła
+        GRAVITY = 0.981 # Przyspieszenie ziemskie
+        czas=[x for x in range(0, 100000)]
+        kat_poczatkowy=math.pi/4
+        theta=kat_poczatkowy*math.cos(math.sqrt(GRAVITY/LENGTH)*czas[0])
+        x0=250
+        y0=10
+        root = tk.Tk()
+        root.title("Animacja wahadła")
 
-                            # Definicje przyciskow
+        # Ustawienia dla płótna, na którym będzie rysowane wahadło
+        canvas = tk.Canvas(root, width=500, height=400, bg='white')
+        canvas.pack()
+
+        # Utworzenie kuli reprezentującej wahadło
+        ball = canvas.create_oval(250-RADIUS, 100-RADIUS, 250+RADIUS, 100+RADIUS, fill='blue')
+        ceil = canvas.create_rectangle(230, 10, 270, 11, fill='black')
+        rod = canvas.create_line(250, 10, 250, 310) 
+
+        def animate(angle, time):
+            x=x0+LENGTH*math.sin(angle)
+            y=y0+LENGTH*math.cos(angle)
+            canvas.coords(ball, x - RADIUS, y - RADIUS, x + RADIUS, y + RADIUS)
+            new_angle = theta * math.cos(math.sqrt(GRAVITY / LENGTH) * time[0])
+            time=time[1:]
+            root.after(50, animate, new_angle, time)
+
+        animate(theta, czas)
+
+                        # Definicje przyciskow
     def window(self):
         """look and feel"""
         self.name_label = tk.Label(self,text=f"App")
-
         fontSize = 16
         self.Xpos = tk.Label(self, text=f"X = ", font=("Arial", fontSize))
         self.Ypos = tk.Label(self, text=f"Y = ", font=("Arial", fontSize))
@@ -249,7 +256,7 @@ class klasa_cokolwiek(tk.Frame):
         self.dlugosc = tk.Label(self, text=f"Podaj dlugosc ", font=("Arial", fontSize))
         self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
         self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
-        #self.animacja = tk.Label(self, command=lambda: self.animacja())
+        self.animacja = tk.Label(self, command=lambda: self.animacja())
 
         self.animacja()
         self.plot_EnergiaPotSlup()
