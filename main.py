@@ -71,15 +71,34 @@ class App(tk.Tk):
 class klasa_cokolwiek(tk.Frame):
     def __init__(self, parent, controller, address=1):
 
-        
-
         tk.Frame.__init__(self,parent,height=1080,width=1920)
         self.parent = parent
         self.controller = controller
         self.address = address
+
         self.c = tk.Canvas(self,width=1910,height=1070,highlightthickness=5,bg="#8F8F8F")
         self.c.place(x=0,y=0)
         self.ready=False
+
+        self.LENGTH = 300 # Długość nici wahadła
+        self.RADIUS = 5   # Promień kuli wahadła
+        self.GRAVITY = 0.981 # Przyspieszenie ziemskie
+        self.czas=[x for x in range(0, 100000)]
+        self.kat_poczatkowy=math.pi/4
+        self.theta=self.kat_poczatkowy*math.cos(math.sqrt(self.GRAVITY/self.LENGTH)*self.czas[0])
+        self.x0=250
+        self.y0=10
+
+
+        #self.root = self.c
+        #self.root.title("Animacja wahadła")
+
+        # Ustawienia dla płótna, na którym będzie rysowane wahadło
+        #self.canvas = tk.Canvas(self, width=500, height=400, bg='white')
+        #self.canvas.pack()
+
+        # Utworzenie kuli reprezentującej wahadło
+
         self.start_time = tk.StringVar(self,"0","my_Var")
         self.stop_time = tk.StringVar(self,"0","my_Var2")
         self.window()
@@ -206,37 +225,19 @@ class klasa_cokolwiek(tk.Frame):
 
     #def anim_setup(self):
         
-    
-    def animacja_setup(self):
-        LENGTH = 300 # Długość nici wahadła
-        RADIUS = 5   # Promień kuli wahadła
-        GRAVITY = 0.981 # Przyspieszenie ziemskie
-        czas=[x for x in range(0, 100000)]
-        kat_poczatkowy=math.pi/4
-        theta=kat_poczatkowy*math.cos(math.sqrt(GRAVITY/LENGTH)*czas[0])
-        x0=250
-        y0=10
-        root = tk.Tk()
-        root.title("Animacja wahadła")
 
-        # Ustawienia dla płótna, na którym będzie rysowane wahadło
-        canvas = tk.Canvas(root, width=500, height=400, bg='white')
-        canvas.pack()
 
-        # Utworzenie kuli reprezentującej wahadło
-        ball = canvas.create_oval(250-RADIUS, 100-RADIUS, 250+RADIUS, 100+RADIUS, fill='blue')
-        ceil = canvas.create_rectangle(230, 10, 270, 11, fill='black')
-        rod = canvas.create_line(250, 10, 250, 310) 
+    def animacja(self, angle, time):
+        self.x=self.x0+self.LENGTH*math.sin(angle)
+        self.y=self.y0+self.LENGTH*math.cos(angle)
+        self.animacjaBox.coords(self.ball, self.x - self.RADIUS, self.y - self.RADIUS, self.x + self.RADIUS, self.y + self.RADIUS)
+        self.animacjaBox.coords(self.rod, 250, 10, self.x, self.y)
+        self.new_angle = self.theta * math.cos(math.sqrt(self.GRAVITY / self.LENGTH) * time[0])
+        time=time[1:]
+        self.after(35, self.animacja, self.new_angle, time)
+        #self.canvas.draw()
+        #self.canvas.get_tk_widget().place(anchor=tk.NW, x=800, y=800, width=300, height=200)
 
-        def animate(angle, time):
-            x=x0+LENGTH*math.sin(angle)
-            y=y0+LENGTH*math.cos(angle)
-            canvas.coords(ball, x - RADIUS, y - RADIUS, x + RADIUS, y + RADIUS)
-            new_angle = theta * math.cos(math.sqrt(GRAVITY / LENGTH) * time[0])
-            time=time[1:]
-            root.after(50, animate, new_angle, time)
-
-        animate(theta, czas)
 
                         # Definicje przyciskow
     def window(self):
@@ -256,9 +257,13 @@ class klasa_cokolwiek(tk.Frame):
         self.dlugosc = tk.Label(self, text=f"Podaj dlugosc ", font=("Arial", fontSize))
         self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
         self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
-        self.animacja = tk.Label(self, command=lambda: self.animacja())
+        self.animacjaBox = tk.Canvas(self, width=500, height=400, bg="white")
 
-        self.animacja()
+        self.ball = self.animacjaBox.create_oval(250-self.RADIUS, 100-self.RADIUS, 250+self.RADIUS, 100+self.RADIUS, fill='blue')
+        self.ceil = self.animacjaBox.create_rectangle(230, 10, 270, 11, fill='black')
+        self.rod = self.animacjaBox.create_line(250, 10, 250, 310) 
+
+        self.animacja(self.theta, self.czas)
         self.plot_EnergiaPotSlup()
         self.plot_EnergiaKinSlup()
         self.plot_EnergiaPotLin()
@@ -284,7 +289,7 @@ class klasa_cokolwiek(tk.Frame):
         self.Przyspieszenie.place(anchor=tk.NW, x=UpXpos+1500, y=UpYpos, width=Upwidth, height=Upheight)
         self.dlugosc.place(anchor=tk.NW, x=40, y=800, width=200, height=50)
         self.waga.place(anchor=tk.NW, x=40, y=900, width=200, height=50)
-        self.animacja.place(anchor=tk.NW, x=800, y=800, width=300, height=200)
+        self.animacjaBox.place(anchor=tk.NW, x=700, y=750, width=500, height=320)
         self.autorzy.place(anchor=tk.NW, x=1600, y=820, width=200, height=100)
 
 
