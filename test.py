@@ -31,7 +31,7 @@ def animate(angle, time):
     canvas.coords(rod, 250, 10, x, y)
     new_angle = theta * math.cos(math.sqrt(GRAVITY / LENGTH) * time[0])
     time=time[1:]
-    root.after(50, animate, new_angle, time)
+    root.after(35, animate, new_angle, time)
 
 animate(theta, czas)
 
