@@ -18,8 +18,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 
 
-
-
 class StopThread(StopIteration):
     pass
 
@@ -76,7 +74,7 @@ class klasa_cokolwiek(tk.Frame):
         self.parent = parent
         self.controller = controller
         self.address = address
-        self.c = tk.Canvas(self,width=1920,height=1080,highlightthickness=5,bg="#8F8F8F")
+        self.c = tk.Canvas(self,width=1910,height=1070,highlightthickness=5,bg="#8F8F8F")
         self.c.place(x=0,y=0)
         self.ready=False
         self.start_time = tk.StringVar(self,"0","my_Var")
@@ -147,19 +145,61 @@ class klasa_cokolwiek(tk.Frame):
         self.canvas.draw()
         return t
 
-    def plot_data(self):
+    def plot_EnergiaPotSlup(self):
         self.fig = Figure(figsize=(1,1))
         self.ax = self.fig.add_subplot(111)
         self.ax.set_xlim(0,2)                   # Skala wykresu
         self.ax.set_ylim(-10,100)
-        self.ax.set_xlabel("Time[sec]",fontsize=12)
-        self.ax.set_ylabel("random[random]",fontsize=12)
+        self.ax.set_xlabel("Time[sec]",fontsize=10)
+        self.ax.set_ylabel("random[random]",fontsize=10)
         self.ax.grid(True)
-        self.scatter = self.ax.scatter([],[])
-        self.fig.subplots_adjust(bottom=0.15)
+        self.bar = self.ax.bar([],[])
+        self.fig.subplots_adjust(bottom=0.20)
         self.canvas = FigureCanvasTkAgg(self.fig,master=self)
         self.canvas.draw()
-        #self.canvas.get_tk_widget().place(x=10,y=40,width =620,height=340)
+        self.canvas.get_tk_widget().place(x=300,y=150,width=550,height=280)
+
+    def plot_EnergiaKinSlup(self):
+        self.fig = Figure(figsize=(1,1))
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_xlim(0,2)                   # Skala wykresu
+        self.ax.set_ylim(-10,100)
+        self.ax.set_xlabel("Time[sec]",fontsize=10)
+        self.ax.set_ylabel("random[random]",fontsize=10)
+        self.ax.grid(True)
+        self.scatter = self.ax.scatter([],[])
+        self.fig.subplots_adjust(bottom=0.20)
+        self.canvas = FigureCanvasTkAgg(self.fig,master=self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().place(x=1000,y=150,width=550,height=280)
+
+    def plot_EnergiaPotLin(self):
+        self.fig = Figure(figsize=(1,1))
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_xlim(0,2)                   # Skala wykresu
+        self.ax.set_ylim(-10,100)
+        self.ax.set_xlabel("Time[sec]",fontsize=10)
+        self.ax.set_ylabel("random[random]",fontsize=10)
+        self.ax.grid(True)
+        self.scatter = self.ax.scatter([],[])
+        self.fig.subplots_adjust(bottom=0.20)
+        self.canvas = FigureCanvasTkAgg(self.fig,master=self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().place(x=300,y=450,width=550,height=280)
+
+    def plot_EnergiaKinLin(self):
+        self.fig = Figure(figsize=(1,1))
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_xlim(0,2)                   # Skala wykresu
+        self.ax.set_ylim(-10,100)
+        self.ax.set_xlabel("Time[sec]",fontsize=10)
+        self.ax.set_ylabel("random[random]",fontsize=10)
+        self.ax.grid(True)
+        self.scatter = self.ax.scatter([],[])
+        self.fig.subplots_adjust(bottom=0.20)
+        self.canvas = FigureCanvasTkAgg(self.fig,master=self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().place(x=1000,y=450,width=550,height=280)
 
                         # Definicje przyciskow
     def window(self):
@@ -180,29 +220,28 @@ class klasa_cokolwiek(tk.Frame):
         self.start_time_label = tk.Label(self,text="Not started yet.")
         self.stop_time_text_label = tk.Label(self,text=f"Experiment stopped at:")
         self.stop_time_label = tk.Label(self,text="Not finished.")
-
-        self.text_filip_label = tk.Label(self,text=f"""
-        dwa okna sa po to zebys zrozumial po co jest petla
-        w klasie app po kontenerach,
-        to jest kontener nr: {self.address} pozdro""",font=("Calibri",18))
-        #Panie Blazeju, wysylalem to kiedys do kolegi stad te komentarze, wiec moze i Panu sie przydadza, nie usuwam ich
         
-        self.Xpos = tk.Label(self, text=f"X = ")
-        self.Ypos = tk.Label(self, text=f"Y = ")
-        self.EnergiaPotencjalna = tk.Label(self, text=f"Energia potencjalna = ")
-        self.EnergiaKinetyczna = tk.Label(self, text=f"Energia Kinetyczna = ")
-        self.Predkosc = tk.Label(self, text=f"Predkosc = ")
-        self.Przyspieszenie = tk.Label(self, text=f"Przyspieszenie = ")
-        self.Ep_slupkowa = tk.Label(self, text=f"Energia Pot")
-        self.Ek_slupkowa = tk.Label(self, text=f"Energia Kin")
-        self.Ep_liniowa = tk.Label(self, text=f"")
-        self.Ek_liniowa = tk.Label(self, text=f"")
-        self.dlugosc = tk.Label(self, text=f"Podaj dlugosc ")
-        self.waga = tk.Label(self, text=f"Podaj wage ")
-        self.animacja = tk.Label(self, text=f"")
-        self.autorzy = tk.Label(self, text=f"marcin, blazej")
+        fontSize = 16
+        self.Xpos = tk.Label(self, text=f"X = ", font=("Arial", fontSize))
+        self.Ypos = tk.Label(self, text=f"Y = ", font=("Arial", fontSize))
+        self.EnergiaPotencjalna = tk.Label(self, text=f"Energia potencjalna = ", font=("Arial", fontSize))
+        self.EnergiaKinetyczna = tk.Label(self, text=f"Energia Kinetyczna = ", font=("Arial", fontSize))
+        self.Predkosc = tk.Label(self, text=f"Predkosc = ", font=("Arial", fontSize))
+        self.Przyspieszenie = tk.Label(self, text=f"Przyspieszenie = ", font=("Arial", fontSize))
+        self.Ep_slupkowa = tk.Label(self, text=f"Energia Pot", font=("Arial", fontSize))
+        self.Ek_slupkowa = tk.Label(self, text=f"Energia Kin", font=("Arial", fontSize))
+        self.Ep_liniowa = tk.Label(self, text=f"", font=("Arial", fontSize))
+        self.Ek_liniowa = tk.Label(self, text=f"", font=("Arial", fontSize))
+        self.dlugosc = tk.Label(self, text=f"Podaj dlugosc ", font=("Arial", fontSize))
+        self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
+        self.animacja = tk.Label(self, text=f"", font=("Arial", fontSize))
+        self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
+        self.animacja = tk.Label(self, text=f"giga animacja", font=("Arial", 30))
 
-        self.plot_data()
+        self.plot_EnergiaPotSlup()
+        self.plot_EnergiaKinSlup()
+        self.plot_EnergiaPotLin()
+        self.plot_EnergiaKinLin()
         #self.current_time_label = tk.Label(self,text=self.current_time)
         # self.com1 = tk.Text(self,width=100,height=6,bg="#0F0FFF",fg="black",font=("Calibri 16"),highlightthickness=2)
         # self.com1.place(x=13,y=50)
@@ -211,9 +250,9 @@ class klasa_cokolwiek(tk.Frame):
 
                     # Rozmieszczenie przyciskow
     def __place_all(self):
-        self.name_label.place(anchor=tk.NW,x=10,y=10,width=1920,height=30)
-        Upheight = 100
-        Upwidth = 220
+        self.name_label.place(anchor=tk.NW,x=10,y=10,width=1900,height=30)
+        Upheight = 80
+        Upwidth = 200
         UpXpos = 90
         UpYpos = 50
         self.Xpos.place(anchor=tk.NW, x=UpXpos, y=UpYpos, width=Upwidth, height=Upheight)
@@ -222,6 +261,10 @@ class klasa_cokolwiek(tk.Frame):
         self.EnergiaKinetyczna.place(anchor=tk.NW, x=UpXpos+900, y=UpYpos, width=Upwidth, height=Upheight)
         self.Predkosc.place(anchor=tk.NW, x=UpXpos+1200, y=UpYpos, width=Upwidth, height=Upheight)
         self.Przyspieszenie.place(anchor=tk.NW, x=UpXpos+1500, y=UpYpos, width=Upwidth, height=Upheight)
+        self.dlugosc.place(anchor=tk.NW, x=40, y=800, width=200, height=50)
+        self.waga.place(anchor=tk.NW, x=40, y=900, width=200, height=50)
+        self.animacja.place(anchor=tk.NW, x=800, y=800, width=300, height=200)
+        self.autorzy.place(anchor=tk.NW, x=1600, y=820, width=200, height=100)
 
 
     def save_results(self):
