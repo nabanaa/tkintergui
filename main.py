@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
-
+import math
 import tkinter.ttk as ttk
 from tkinter import font as tkfont
 from tkinter import filedialog as fd
@@ -201,25 +201,16 @@ class klasa_cokolwiek(tk.Frame):
         self.canvas.draw()
         self.canvas.get_tk_widget().place(x=1000,y=450,width=550,height=280)
 
+    #def anim_setup(self):
+        
+    
+    #def animacja(self):
+        
+
                         # Definicje przyciskow
     def window(self):
         """look and feel"""
         self.name_label = tk.Label(self,text=f"App")
-
-        self.set_but = tk.Button(self,text=f"unlock start button",command = lambda: self.set_params())
-
-        self.start_but = tk.Button(self,text=f"Start experiment",command = lambda: self.start())
-        self.start_but["state"]= "disabled"
-        self.stop_but = tk.Button(self,text=f"STOP",command = lambda: self.stop(),fg="red")
-
-        #self.emergency_stop_but = tk.Button(self,text=f"EMERGENCY STOP",bg="red",highlightbackground="red",command = lambda: self.emergency_stop())
-        self.grid_show_but = tk.Button(self,text=f"plot grid on/off",command = lambda: self.p_grid())
-        self.save_data_but = tk.Button(self,text=f"Save data",command = lambda: self.save_results())
-        self.clear_plot_but = tk.Button(self,text=f"Clear plot",command = lambda: self.clear_plot())
-        self.start_time_text_label = tk.Label(self,text=f"Experiment started at:")
-        self.start_time_label = tk.Label(self,text="Not started yet.")
-        self.stop_time_text_label = tk.Label(self,text=f"Experiment stopped at:")
-        self.stop_time_label = tk.Label(self,text="Not finished.")
         
         fontSize = 16
         self.Xpos = tk.Label(self, text=f"X = ", font=("Arial", fontSize))
@@ -236,7 +227,7 @@ class klasa_cokolwiek(tk.Frame):
         self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
         self.animacja = tk.Label(self, text=f"", font=("Arial", fontSize))
         self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
-        self.animacja = tk.Label(self, text=f"giga animacja", font=("Arial", 30))
+        self.animacja = tk.Button(self, text=f"giga animacja", font=("Arial", 30), command=lambda: self.animacja())
 
         self.plot_EnergiaPotSlup()
         self.plot_EnergiaKinSlup()
