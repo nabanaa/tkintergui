@@ -89,6 +89,7 @@ class klasa_cokolwiek(tk.Frame):
         self.x0=250
         self.y0=10
 
+        
 
         #self.root = self.c
         #self.root.title("Animacja wahadła")
@@ -228,6 +229,7 @@ class klasa_cokolwiek(tk.Frame):
 
 
     def animacja(self, angle, time):
+
         self.x=self.x0+self.LENGTH*math.sin(angle)
         self.y=self.y0+self.LENGTH*math.cos(angle)
         self.animacjaBox.coords(self.ball, self.x - self.RADIUS, self.y - self.RADIUS, self.x + self.RADIUS, self.y + self.RADIUS)
@@ -257,11 +259,11 @@ class klasa_cokolwiek(tk.Frame):
         self.dlugosc = tk.Label(self, text=f"Podaj dlugosc ", font=("Arial", fontSize))
         self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
         self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
-        self.animacjaBox = tk.Canvas(self, width=500, height=400, bg="white")
+        self.animacjaBox = tk.Canvas(self, width=500, height=400, bg="white") 
 
         self.ball = self.animacjaBox.create_oval(250-self.RADIUS, 100-self.RADIUS, 250+self.RADIUS, 100+self.RADIUS, fill='blue')
         self.ceil = self.animacjaBox.create_rectangle(230, 10, 270, 11, fill='black')
-        self.rod = self.animacjaBox.create_line(250, 10, 250, 310) 
+        self.rod = self.animacjaBox.create_line(250, 10, 250, 310)
 
         self.animacja(self.theta, self.czas)
         self.plot_EnergiaPotSlup()
