@@ -15,6 +15,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 
 
+
 class StopThread(StopIteration):
     pass
 
@@ -93,12 +94,12 @@ class klasa_cokolwiek(tk.Frame):
         if self.ready:
             self.start_but["state"] = "disabled"
 
-            time.sleep(1)
+            #time.sleep(1)
             i = 0
             self.__xtimer = time.time()
             ttt = 1
             while (i < num):
-                time.sleep(0.0001)
+                #time.sleep(0.0001)
                 self.dodaj_ptk(ttt)
                 ttt += 1
                 i += 1
@@ -142,98 +143,59 @@ class klasa_cokolwiek(tk.Frame):
         t = math.sin(ttt)
         x = self.scatter0.get_offsets()[:, 0].tolist()
         y = self.scatter0.get_offsets()[:, 1].tolist()
-        z = self.scatter1.get_offsets()[:, 1].tolist()
+        z = self.scatter2.get_offsets()[:, 1].tolist()
         if len(x) == 0:
             x.append(0)
+        elif len(x)<15:
+            x.append(time.time() - self.__xtimer)
         else:
+            y.pop(0)
+            z.pop(0)
+            x.pop(0)
             x.append(time.time() - self.__xtimer)
         y.append(t)
         z.append(-t)
         xx = np.c_[x, y]
         yy = np.c_[x, z]
         self.scatter0.set_offsets(xx)
-        self.scatter1.set_offsets(yy)
+        # self.axs[1, 0].bar(x, y, width=1)
         self.scatter2.set_offsets(xx)
-        self.scatter3.set_offsets(yy)
-        self.axs[0, 0].set_xlim(0, x[-1] + 1)
-        self.axs[0, 1].set_xlim(0, x[-1] + 1)
-        self.axs[1, 0].set_xlim(0, x[-1] + 1)
-        self.axs[1, 1].set_xlim(0, x[-1] + 1)
+        # self.scatter3.set_offsets(yy)
+        self.axs[0].set_xlim(x[-1]-5, x[-1] + 1)
+        self.axs[1].set_xlim(x[-1]-5, x[-1] + 1)
+        # self.axs[1, 0].set_xlim(x[-1], x[-1])
+        # self.axs[1, 1].set_xlim(x[-1]-5, x[-1] + 1)
         self.canvas.draw()
         return t
 
     def plot_Energia(self):
         self.fig = Figure(figsize=(1, 1))
-        self.axs = self.fig.subplots(2, 2)
-        self.scatter0 = self.axs[0, 0].scatter([], [])  # potencjalna liniowa
-        self.axs[0, 0].set_title("potencja")
-        self.axs[0, 0].set_ylim(-2, 2)
+        self.axs = self.fig.subplots(1, 2)
+        self.scatter0 = self.axs[0].scatter([], [], lw=2)  # potencjalna liniowa
+        self.axs[0].set_title("potencja")
+        self.axs[0].set_ylim(-2, 2)
 
-        self.scatter1 = self.axs[1, 0].scatter([], [])  # potencjalna slupkowa
-        self.axs[1, 0].set_title("kinetyczna")
-        self.axs[1, 0].sharey(self.axs[0, 0])
+        # self.scatter1 = self.axs[1, 0].bar(1, [])  # potencjalna slupkowa
+        # self.axs[1, 0].set_title("kinetyczna")
+        # self.axs[1, 0].sharey(self.axs[0, 0])
 
-        self.scatter2 = self.axs[0, 1].scatter([], [])  # kinetyczna liniowa
-        self.axs[0, 1].set_title("potencja")
-        self.axs[0, 1].sharey(self.axs[0, 0])
+        self.scatter2 = self.axs[1].scatter([], [])  # kinetyczna liniowa
+        self.axs[1].set_title("potencja")
+        self.axs[1].sharey(self.axs[0])
+        #
+        # self.scatter3 = self.axs[1, 1].scatter([], [])  # kinetyczna slupkowa
+        # self.axs[1, 1].sharey(self.axs[0, 0])
+        # self.axs[1, 1].set_title("kinetyczna")
 
-        self.scatter3 = self.axs[1, 1].scatter([], [])  # kinetyczna slupkowa
-        self.axs[1, 1].sharey(self.axs[0, 0])
-        self.axs[1, 1].set_title("kinetyczna")
-
-        self.axs[0, 0].grid(True)
-        self.axs[0, 1].grid(True)
-        self.axs[1, 0].grid(True)
-        self.axs[1, 1].grid(True)
+        self.axs[0].grid(True)
+        self.axs[1].grid(True)
+        # self.axs[1, 0].grid(True)
+        # self.axs[1, 1].grid(True)
         # self.fig.tight_layout()
         self.fig.subplots_adjust(bottom=0.20)
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.draw()
         self.canvas.get_tk_widget().place(x=120, y=150, width=1500, height=600)
-
-    # def plot_EnergiaKinSlup(self):
-    #     self.fig = Figure(figsize=(1,1))
-    #     self.ax = self.fig.add_subplot(111)
-    #     self.ax.set_xlim(0,2)                   # Skala wykresu
-    #     self.ax.set_ylim(-10,100)
-    #     self.ax.set_xlabel("2[sec]",fontsize=10)
-    #     self.ax.set_ylabel("random[random]",fontsize=10)
-    #     self.ax.grid(True)
-    #     self.scatter = self.ax.scatter([],[])
-    #     self.fig.subplots_adjust(bottom=0.20)
-    #     self.canvas = FigureCanvasTkAgg(self.fig,master=self)
-    #     self.canvas.draw()
-    #     self.canvas.get_tk_widget().place(x=1000,y=150,width=550,height=280)
-
-    # def plot_EnergiaLin(self, tag, place):
-    #     self.fig = Figure(figsize=(1,1))
-    #     self.ax = self.fig.add_subplot(111)
-    #     self.ax.set_xlim(0,2)                   # Skala wykresu
-    #     self.ax.set_ylim(-10,100)
-    #     self.ax.set_xlabel(f"{tag}[sec]",fontsize=10)
-    #     self.ax.set_ylabel("random[random]",fontsize=10)
-    #     self.ax.grid(True)
-    #     self.scatter = self.ax.scatter([],[])
-    #     self.fig.subplots_adjust(bottom=0.20)
-    #     self.canvas = FigureCanvasTkAgg(self.fig,master=self)
-    #     self.canvas.draw()
-    #     self.canvas.get_tk_widget().place(x=120+880*place,y=450,width=550,height=280)
-
-    # def plot_EnergiaKinLin(self):
-    #     self.fig = Figure(figsize=(1,1))
-    #     self.ax = self.fig.add_subplot(111)
-    #     self.ax.set_xlim(0,2)                   # Skala wykresu
-    #     self.ax.set_ylim(-10,100)
-    #     self.ax.set_xlabel("4[sec]",fontsize=10)
-    #     self.ax.set_ylabel("random[random]",fontsize=10)
-    #     self.ax.grid(True)
-    #     self.scatter = self.ax.scatter([],[])
-    #     self.fig.subplots_adjust(bottom=0.20)
-    #     self.canvas = FigureCanvasTkAgg(self.fig,master=self)
-    #     self.canvas.draw()
-    #     self.canvas.get_tk_widget().place(x=1000,y=450,width=550,height=280)
-
-    # def anim_setup(self):
 
     def animacja(self, angle, time):
 
