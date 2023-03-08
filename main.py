@@ -117,7 +117,7 @@ class klasa_cokolwiek(tk.Frame):
         self.set_but["state"]= "disabled"
 
     def clear_plot(self):
-        self.scatter.set_offsets(np.c_[[],[]])
+        self.scatter1.set_offsets(np.c_[[],[]])
         self.canvas.draw()
 
     def p_grid(self):
@@ -142,29 +142,42 @@ class klasa_cokolwiek(tk.Frame):
         t = np.random.randint(100)
         x=self.axs[0,0].get_offsets()[:,0].tolist()
         y=self.axs[0,0].get_offsets()[:,1].tolist()
-        if len(x) == 0:
+        if len(x) ==0:
             x.append(0)
         else:
             x.append(time.time()-self.__xtimer)
         y.append(t)
         xx = np.c_[x,y]
-        self.axs[0,0].set_offsets(xx)
+        self.scatter0.set_offsets(xx)
+        self.scatter1.set_offsets(xx)
+        self.scatter2.set_offsets(xx)
+        self.scatter3.set_offsets(xx)
         self.axs[0,0].set_xlim(0,x[-1]+1)
+        self.axs[0, 1].set_xlim(0, x[-1] + 1)
+        self.axs[1, 0].set_xlim(0, x[-1] + 1)
+        self.axs[1, 1].set_xlim(0, x[-1] + 1)
         self.canvas.draw()
         return t
 
     def plot_Energia(self):
         self.fig = Figure(figsize=(1,1))
         self.axs = self.fig.subplots(2, 2)
-        self.axs[0, 0].scatter([], [])
+        self.scatter0=self.axs[0, 0].scatter([], [])
         self.axs[0, 0].set_title("main")
-        self.axs[1, 0].scatter([], [])
+        self.axs[0, 0].set_ylim(-10, 100)
+
+        self.scatter1=self.axs[1, 0].scatter([], [])
         self.axs[1, 0].set_title("shares x with main")
-        self.axs[1, 0].sharex(self.axs[0, 0])
-        self.axs[0, 1].scatter([], [])
+        self.axs[1, 0].sharey(self.axs[0, 0])
+
+        self.scatter2=self.axs[0, 1].scatter([], [])
         self.axs[0, 1].set_title("unrelated")
-        self.axs[1, 1].scatter([], [])
+        self.axs[0, 1].sharey(self.axs[0, 0])
+
+        self.scatter3=self.axs[1, 1].scatter([], [])
+        self.axs[1, 1].sharey(self.axs[0, 0])
         self.axs[1, 1].set_title("also unrelated")
+
         self.axs[0, 0].grid(True)
         self.axs[0, 1].grid(True)
         self.axs[1, 0].grid(True)
