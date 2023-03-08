@@ -139,7 +139,7 @@ class klasa_cokolwiek(tk.Frame):
         self.canvas.draw()
 
     def dodaj_ptk(self):
-        t = np.random.randint(100)
+        t = np.random.random()
         x=self.scatter0.get_offsets()[:,0].tolist()
         y=self.scatter0.get_offsets()[:,1].tolist()
         if len(x) ==0:
@@ -164,7 +164,7 @@ class klasa_cokolwiek(tk.Frame):
         self.axs = self.fig.subplots(2, 2)
         self.scatter0=self.axs[0, 0].scatter([], [])
         self.axs[0, 0].set_title("main")
-        self.axs[0, 0].set_ylim(-10, 100)
+        self.axs[0, 0].set_ylim(0, 1)
 
         self.scatter1=self.axs[1, 0].scatter([], [])
         self.axs[1, 0].set_title("shares x with main")
