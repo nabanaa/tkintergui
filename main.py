@@ -1,13 +1,12 @@
 import tkinter as tk
 import math
-from tkinter.scrolledtext import ScrolledText
+
 
 import tkinter.ttk as ttk
 from tkinter import font as tkfont
-from tkinter import filedialog as fd
 
-#from tkinter.ttk import font as tkfont
-#from PIL import Image,ImageTk
+
+
 import os,sys
 import threading
 import multiprocessing
@@ -89,26 +88,14 @@ class klasa_cokolwiek(tk.Frame):
         self.x0=250
         self.y0=10
 
-        
-
-        #self.root = self.c
-        #self.root.title("Animacja wahadła")
-
-        # Ustawienia dla płótna, na którym będzie rysowane wahadło
-        #self.canvas = tk.Canvas(self, width=500, height=400, bg='white')
-        #self.canvas.pack()
-
-        
-
         self.start_time = tk.StringVar(self,"0","my_Var")
         self.stop_time = tk.StringVar(self,"0","my_Var2")
         self.window()
 
 
+
     def randomuj(self,num=10000):
         if self.ready:
-            #self.start_time.set(datetime.datetime.now().strftime("%y/%m/%d %H:%M:%S"))
-            #self.start_time_label.config(text=self.start_time.get())
             self.start_but["state"]= "disabled"
 
             time.sleep(1)
@@ -142,8 +129,6 @@ class klasa_cokolwiek(tk.Frame):
             self.set_but["state"]= "normal"
             self.t.stop()
             self.ready = False
-            #self.stop_time.set(datetime.datetime.now().strftime("%y/%m/%d %H:%M:%S"))
-            #self.stop_time_label.config(text=self.stop_time.get())
 
     def set_params(self):
         if self.ready==True:
@@ -155,74 +140,82 @@ class klasa_cokolwiek(tk.Frame):
 
     def dodaj_ptk(self):
         t = np.random.randint(100)
-        x=self.scatter.get_offsets()[:,0].tolist()
-        y=self.scatter.get_offsets()[:,1].tolist()
+        x=self.axs[0,0].get_offsets()[:,0].tolist()
+        y=self.axs[0,0].get_offsets()[:,1].tolist()
         if len(x) ==0:
             x.append(0)
         else:
             x.append(time.time()-self.__xtimer)
         y.append(t)
         xx = np.c_[x,y]
-        self.scatter.set_offsets(xx)
-        self.ax.set_xlim(0,x[-1]+1)
+        self.axs[0,0].set_offsets(xx)
+        self.axs[0,0].set_xlim(0,x[-1]+1)
         self.canvas.draw()
         return t
 
-    def plot_EnergiaPotSlup(self):
+    def plot_Energia(self):
         self.fig = Figure(figsize=(1,1))
-        self.ax = self.fig.add_subplot(111)
-        self.ax.set_xlim(0,2)                   # Skala wykresu
-        self.ax.set_ylim(-10,100)
-        self.ax.set_xlabel("Time[sec]",fontsize=10)
-        self.ax.set_ylabel("random[random]",fontsize=10)
-        self.ax.grid(True)
-        self.scatter = self.ax.scatter([],[])
+        self.axs = self.fig.subplots(2, 2)
+        self.axs[0, 0].scatter([], [])
+        self.axs[0, 0].set_title("main")
+        self.axs[1, 0].scatter([], [])
+        self.axs[1, 0].set_title("shares x with main")
+        self.axs[1, 0].sharex(self.axs[0, 0])
+        self.axs[0, 1].scatter([], [])
+        self.axs[0, 1].set_title("unrelated")
+        self.axs[1, 1].scatter([], [])
+        self.axs[1, 1].set_title("also unrelated")
+        self.axs[0, 0].grid(True)
+        self.axs[0, 1].grid(True)
+        self.axs[1, 0].grid(True)
+        self.axs[1, 1].grid(True)
+        # self.fig.tight_layout()
         self.fig.subplots_adjust(bottom=0.20)
         self.canvas = FigureCanvasTkAgg(self.fig,master=self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().place(x=120,y=150,width=550,height=280)
+        self.canvas.get_tk_widget().place(x=120,y=150,width=1500,height=600)
 
-    def plot_EnergiaKinSlup(self):
-        self.fig = Figure(figsize=(1,1))
-        self.ax = self.fig.add_subplot(111)
-        self.ax.set_xlim(0,2)                   # Skala wykresu
-        self.ax.set_ylim(-10,100)
-        self.ax.set_xlabel("Time[sec]",fontsize=10)
-        self.ax.set_ylabel("random[random]",fontsize=10)
-        self.ax.grid(True)
-        self.scatter = self.ax.scatter([],[])
-        self.fig.subplots_adjust(bottom=0.20)
-        self.canvas = FigureCanvasTkAgg(self.fig,master=self)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().place(x=1000,y=150,width=550,height=280)
+    # def plot_EnergiaKinSlup(self):
+    #     self.fig = Figure(figsize=(1,1))
+    #     self.ax = self.fig.add_subplot(111)
+    #     self.ax.set_xlim(0,2)                   # Skala wykresu
+    #     self.ax.set_ylim(-10,100)
+    #     self.ax.set_xlabel("2[sec]",fontsize=10)
+    #     self.ax.set_ylabel("random[random]",fontsize=10)
+    #     self.ax.grid(True)
+    #     self.scatter = self.ax.scatter([],[])
+    #     self.fig.subplots_adjust(bottom=0.20)
+    #     self.canvas = FigureCanvasTkAgg(self.fig,master=self)
+    #     self.canvas.draw()
+    #     self.canvas.get_tk_widget().place(x=1000,y=150,width=550,height=280)
 
-    def plot_EnergiaPotLin(self):
-        self.fig = Figure(figsize=(1,1))
-        self.ax = self.fig.add_subplot(111)
-        self.ax.set_xlim(0,2)                   # Skala wykresu
-        self.ax.set_ylim(-10,100)
-        self.ax.set_xlabel("Time[sec]",fontsize=10)
-        self.ax.set_ylabel("random[random]",fontsize=10)
-        self.ax.grid(True)
-        self.scatter = self.ax.scatter([],[])
-        self.fig.subplots_adjust(bottom=0.20)
-        self.canvas = FigureCanvasTkAgg(self.fig,master=self)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().place(x=120,y=450,width=550,height=280)
+    # def plot_EnergiaLin(self, tag, place):
+    #     self.fig = Figure(figsize=(1,1))
+    #     self.ax = self.fig.add_subplot(111)
+    #     self.ax.set_xlim(0,2)                   # Skala wykresu
+    #     self.ax.set_ylim(-10,100)
+    #     self.ax.set_xlabel(f"{tag}[sec]",fontsize=10)
+    #     self.ax.set_ylabel("random[random]",fontsize=10)
+    #     self.ax.grid(True)
+    #     self.scatter = self.ax.scatter([],[])
+    #     self.fig.subplots_adjust(bottom=0.20)
+    #     self.canvas = FigureCanvasTkAgg(self.fig,master=self)
+    #     self.canvas.draw()
+    #     self.canvas.get_tk_widget().place(x=120+880*place,y=450,width=550,height=280)
 
-    def plot_EnergiaKinLin(self):
-        self.fig = Figure(figsize=(1,1))
-        self.ax = self.fig.add_subplot(111)
-        self.ax.set_xlim(0,2)                   # Skala wykresu
-        self.ax.set_ylim(-10,100)
-        self.ax.set_xlabel("Time[sec]",fontsize=10)
-        self.ax.set_ylabel("random[random]",fontsize=10)
-        self.ax.grid(True)
-        self.scatter = self.ax.scatter([],[])
-        self.fig.subplots_adjust(bottom=0.20)
-        self.canvas = FigureCanvasTkAgg(self.fig,master=self)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().place(x=1000,y=450,width=550,height=280)
+    # def plot_EnergiaKinLin(self):
+    #     self.fig = Figure(figsize=(1,1))
+    #     self.ax = self.fig.add_subplot(111)
+    #     self.ax.set_xlim(0,2)                   # Skala wykresu
+    #     self.ax.set_ylim(-10,100)
+    #     self.ax.set_xlabel("4[sec]",fontsize=10)
+    #     self.ax.set_ylabel("random[random]",fontsize=10)
+    #     self.ax.grid(True)
+    #     self.scatter = self.ax.scatter([],[])
+    #     self.fig.subplots_adjust(bottom=0.20)
+    #     self.canvas = FigureCanvasTkAgg(self.fig,master=self)
+    #     self.canvas.draw()
+    #     self.canvas.get_tk_widget().place(x=1000,y=450,width=550,height=280)
 
     #def anim_setup(self):
         
@@ -237,8 +230,6 @@ class klasa_cokolwiek(tk.Frame):
         self.new_angle = self.theta * math.cos(math.sqrt(self.GRAVITY / self.LENGTH) * time[0])
         time=time[1:]
         self.after(35, self.animacja, self.new_angle, time)
-        #self.canvas.draw()
-        #self.canvas.get_tk_widget().place(anchor=tk.NW, x=800, y=800, width=300, height=200)
 
 
                         # Definicje przyciskow
@@ -252,10 +243,6 @@ class klasa_cokolwiek(tk.Frame):
         self.EnergiaKinetyczna = tk.Label(self, text=f"Energia Kinetyczna = ", font=("Arial", fontSize))
         self.Predkosc = tk.Label(self, text=f"Predkosc = ", font=("Arial", fontSize))
         self.Przyspieszenie = tk.Label(self, text=f"Przyspieszenie = ", font=("Arial", fontSize))
-        self.Ep_slupkowa = tk.Label(self, text=f"Energia Pot", font=("Arial", fontSize))
-        self.Ek_slupkowa = tk.Label(self, text=f"Energia Kin", font=("Arial", fontSize))
-        self.Ep_liniowa = tk.Label(self, text=f"", font=("Arial", fontSize))
-        self.Ek_liniowa = tk.Label(self, text=f"", font=("Arial", fontSize))
         self.dlugosc = tk.Label(self, text=f"Podaj dlugosc ", font=("Arial", fontSize))
         self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
         self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
@@ -271,14 +258,10 @@ class klasa_cokolwiek(tk.Frame):
         self.rod = self.animacjaBox.create_line(250, 10, 250, 310)
 
         self.animacja(self.theta, self.czas)
-        self.plot_EnergiaPotSlup()
-        self.plot_EnergiaKinSlup()
-        self.plot_EnergiaPotLin()
-        self.plot_EnergiaKinLin()
-        #self.current_time_label = tk.Label(self,text=self.current_time)
-        # self.com1 = tk.Text(self,width=100,height=6,bg="#0F0FFF",fg="black",font=("Calibri 16"),highlightthickness=2)
-        # self.com1.place(x=13,y=50)
-        # self.com1['state'] = 'disabled'
+        self.plot_Energia()
+        # self.plot_Energia('2', 0, 1)
+        # self.plot_Energia('3', 1, 0)
+        # self.plot_Energia('4', 1, 1)
         self.__place_all()
 
                     # Rozmieszczenie przyciskow
