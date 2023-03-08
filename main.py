@@ -98,7 +98,7 @@ class klasa_cokolwiek(tk.Frame):
         #self.canvas = tk.Canvas(self, width=500, height=400, bg='white')
         #self.canvas.pack()
 
-        # Utworzenie kuli reprezentującej wahadło
+        
 
         self.start_time = tk.StringVar(self,"0","my_Var")
         self.stop_time = tk.StringVar(self,"0","my_Var2")
@@ -107,8 +107,8 @@ class klasa_cokolwiek(tk.Frame):
 
     def randomuj(self,num=10000):
         if self.ready:
-            self.start_time.set(datetime.datetime.now().strftime("%y/%m/%d %H:%M:%S"))
-            self.start_time_label.config(text=self.start_time.get())
+            #self.start_time.set(datetime.datetime.now().strftime("%y/%m/%d %H:%M:%S"))
+            #self.start_time_label.config(text=self.start_time.get())
             self.start_but["state"]= "disabled"
 
             time.sleep(1)
@@ -142,8 +142,8 @@ class klasa_cokolwiek(tk.Frame):
             self.set_but["state"]= "normal"
             self.t.stop()
             self.ready = False
-            self.stop_time.set(datetime.datetime.now().strftime("%y/%m/%d %H:%M:%S"))
-            self.stop_time_label.config(text=self.stop_time.get())
+            #self.stop_time.set(datetime.datetime.now().strftime("%y/%m/%d %H:%M:%S"))
+            #self.stop_time_label.config(text=self.stop_time.get())
 
     def set_params(self):
         if self.ready==True:
@@ -176,11 +176,11 @@ class klasa_cokolwiek(tk.Frame):
         self.ax.set_xlabel("Time[sec]",fontsize=10)
         self.ax.set_ylabel("random[random]",fontsize=10)
         self.ax.grid(True)
-        self.bar = self.ax.bar([],[])
+        self.scatter = self.ax.scatter([],[])
         self.fig.subplots_adjust(bottom=0.20)
         self.canvas = FigureCanvasTkAgg(self.fig,master=self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().place(x=300,y=150,width=550,height=280)
+        self.canvas.get_tk_widget().place(x=120,y=150,width=550,height=280)
 
     def plot_EnergiaKinSlup(self):
         self.fig = Figure(figsize=(1,1))
@@ -208,7 +208,7 @@ class klasa_cokolwiek(tk.Frame):
         self.fig.subplots_adjust(bottom=0.20)
         self.canvas = FigureCanvasTkAgg(self.fig,master=self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().place(x=300,y=450,width=550,height=280)
+        self.canvas.get_tk_widget().place(x=120,y=450,width=550,height=280)
 
     def plot_EnergiaKinLin(self):
         self.fig = Figure(figsize=(1,1))
@@ -246,7 +246,7 @@ class klasa_cokolwiek(tk.Frame):
         """look and feel"""
         self.name_label = tk.Label(self,text=f"App")
         fontSize = 16
-        self.Xpos = tk.Label(self, text=f"X = ", font=("Arial", fontSize))
+        self.Xpos = tk.Label(self, text=f"X = ", font=("Arial", fontSize), anchor="w", padx=20)
         self.Ypos = tk.Label(self, text=f"Y = ", font=("Arial", fontSize))
         self.EnergiaPotencjalna = tk.Label(self, text=f"Energia potencjalna = ", font=("Arial", fontSize))
         self.EnergiaKinetyczna = tk.Label(self, text=f"Energia Kinetyczna = ", font=("Arial", fontSize))
@@ -260,6 +260,11 @@ class klasa_cokolwiek(tk.Frame):
         self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
         self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
         self.animacjaBox = tk.Canvas(self, width=500, height=400, bg="white") 
+        self.set_but = tk.Button(self,text=f"unlock start button",command = lambda: self.set_params(), font=("Arial", fontSize))
+        self.start_but = tk.Button(self,text=f"Start experiment",command = lambda: self.start(), font=("Arial", fontSize))
+        self.start_but["state"]= "disabled"
+        self.stop_but = tk.Button(self,text=f"STOP",command = lambda: self.stop(),fg="red", font=("Arial", fontSize))
+        
 
         self.ball = self.animacjaBox.create_oval(250-self.RADIUS, 100-self.RADIUS, 250+self.RADIUS, 100+self.RADIUS, fill='blue')
         self.ceil = self.animacjaBox.create_rectangle(230, 10, 270, 11, fill='black')
@@ -280,8 +285,8 @@ class klasa_cokolwiek(tk.Frame):
     def __place_all(self):
         self.name_label.place(anchor=tk.NW,x=10,y=10,width=1900,height=30)
         Upheight = 80
-        Upwidth = 200
-        UpXpos = 90
+        Upwidth = 260
+        UpXpos = 60
         UpYpos = 50
         self.Xpos.place(anchor=tk.NW, x=UpXpos, y=UpYpos, width=Upwidth, height=Upheight)
         self.Ypos.place(anchor=tk.NW, x=UpXpos+300, y=UpYpos, width=Upwidth, height=Upheight)
@@ -293,22 +298,9 @@ class klasa_cokolwiek(tk.Frame):
         self.waga.place(anchor=tk.NW, x=40, y=900, width=200, height=50)
         self.animacjaBox.place(anchor=tk.NW, x=700, y=750, width=500, height=320)
         self.autorzy.place(anchor=tk.NW, x=1600, y=820, width=200, height=100)
-
-
-    def save_results(self):
-        """save"""
-        Files = [('All Files', '*.*'),('Text Document', '*.txt'),('CSV','*.csv')]
-        aa = fd.asksaveasfile(filetypes = Files, defaultextension = Files)
-        x = self.scatter.get_offsets()[:,0]
-        y = self.scatter.get_offsets()[:,1]
-        x = np.nan_to_num(x)
-        y = np.nan_to_num(y)
-
-        aa.write(f'time[s],random[FILIPPO],\n')
-        for i in range(len(x)):
-            aa.write(f"{x[i]},{y[i]},\n")
-        aa.flush()
-        aa.close()
+        self.set_but.place(anchor=tk.NW,x=1650,y=310,width=200,height=60)
+        self.start_but.place(x=1650,y=390,anchor=tk.NW,width=200,height=60)
+        self.stop_but.place(x=1650,y=470,anchor=tk.NW,width=200,height=60)
 
 
 if __name__ == "__main__":
