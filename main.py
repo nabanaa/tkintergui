@@ -142,7 +142,7 @@ class klasa_cokolwiek(tk.Frame):
         t = np.random.randint(100)
         x=self.axs[0,0].get_offsets()[:,0].tolist()
         y=self.axs[0,0].get_offsets()[:,1].tolist()
-        if len(x) ==0:
+        if len(x) == 0:
             x.append(0)
         else:
             x.append(time.time()-self.__xtimer)
