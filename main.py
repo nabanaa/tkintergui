@@ -48,16 +48,16 @@ class App(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
         #self.attributes("-fullscreen", 1)
-        self.geometry("1920x1080+0+0")
+        self.geometry("1900x1060+0+0")
         self.bind('<Escape>',lambda event: self.koncz())
         self.style = ttk.Style()
         self.style.configure("BW.TLabel", foreground="black", background="green")
-        self.container = tk.Frame(self,width=1920,height=1080)
+        self.container = tk.Frame(self,width=1900,height=1060)
         self.container.place(x=0,y=0)
         self.containers = {}
         self.cokolwiek = {}
 
-        self.containers[1] = tk.Frame(self,width=1920,height=1080,bg="green")
+        self.containers[1] = tk.Frame(self,width=1900,height=1060,bg="green")
         self.containers[1].place(x=1*0,y=0)
         tk.Label(self.containers[1],text=f"{1}").place(x=200,y=20)
         self.cokolwiek[1] = klasa_cokolwiek(parent=self.containers[1], controller=self,address=1+1)
@@ -70,12 +70,12 @@ class App(tk.Tk):
 class klasa_cokolwiek(tk.Frame):
     def __init__(self, parent, controller, address=1):
 
-        tk.Frame.__init__(self,parent,height=1080,width=1920)
+        tk.Frame.__init__(self,parent,height=1060,width=1900)
         self.parent = parent
         self.controller = controller
         self.address = address
 
-        self.c = tk.Canvas(self,width=1910,height=1070,highlightthickness=5,bg="#8F8F8F")
+        self.c = tk.Canvas(self,width=1890,height=1050,highlightthickness=5,bg="#8F8F8F")
         self.c.place(x=0,y=0)
         self.ready=False
 
@@ -101,9 +101,11 @@ class klasa_cokolwiek(tk.Frame):
             time.sleep(1)
             i = 0
             self.__xtimer = time.time()
+            ttt = 1
             while (i < num):
-                time.sleep(0.01)
-                self.dodaj_ptk()
+                time.sleep(0.0001)
+                self.dodaj_ptk(ttt)
+                ttt+=1
                 i+=1
             self.ready=False
 
@@ -117,7 +119,10 @@ class klasa_cokolwiek(tk.Frame):
         self.set_but["state"]= "disabled"
 
     def clear_plot(self):
+        self.scatter0.set_offsets(np.c_[[],[]])
         self.scatter1.set_offsets(np.c_[[],[]])
+        self.scatter2.set_offsets(np.c_[[],[]])
+        self.scatter3.set_offsets(np.c_[[],[]])
         self.canvas.draw()
 
     def p_grid(self):
@@ -138,21 +143,24 @@ class klasa_cokolwiek(tk.Frame):
         self.clear_plot()
         self.canvas.draw()
 
-    def dodaj_ptk(self):
-        t = np.random.random()
+    def dodaj_ptk(self, ttt):
+        t = math.sin(ttt)
         x=self.scatter0.get_offsets()[:,0].tolist()
         y=self.scatter0.get_offsets()[:,1].tolist()
+        z=self.scatter1.get_offsets()[:,1].tolist()
         if len(x) ==0:
             x.append(0)
         else:
             x.append(time.time()-self.__xtimer)
         y.append(t)
+        z.append(-t)
         xx = np.c_[x,y]
+        yy = np.c_[x,z]
         self.scatter0.set_offsets(xx)
-        self.scatter1.set_offsets(xx)
+        self.scatter1.set_offsets(yy)
         self.scatter2.set_offsets(xx)
-        self.scatter3.set_offsets(xx)
-        self.axs[0,0].set_xlim(0,x[-1]+1)
+        self.scatter3.set_offsets(yy)
+        self.axs[0, 0].set_xlim(0, x[-1] + 1)
         self.axs[0, 1].set_xlim(0, x[-1] + 1)
         self.axs[1, 0].set_xlim(0, x[-1] + 1)
         self.axs[1, 1].set_xlim(0, x[-1] + 1)
@@ -162,21 +170,21 @@ class klasa_cokolwiek(tk.Frame):
     def plot_Energia(self):
         self.fig = Figure(figsize=(1,1))
         self.axs = self.fig.subplots(2, 2)
-        self.scatter0=self.axs[0, 0].scatter([], [])
-        self.axs[0, 0].set_title("main")
-        self.axs[0, 0].set_ylim(0, 1)
+        self.scatter0=self.axs[0, 0].scatter([], []) # potencjalna liniowa
+        self.axs[0, 0].set_title("potencja")
+        self.axs[0, 0].set_ylim(-2, 2)
 
-        self.scatter1=self.axs[1, 0].scatter([], [])
-        self.axs[1, 0].set_title("shares x with main")
+        self.scatter1=self.axs[1, 0].scatter([], []) # potencjalna slupkowa
+        self.axs[1, 0].set_title("kinetyczna")
         self.axs[1, 0].sharey(self.axs[0, 0])
 
-        self.scatter2=self.axs[0, 1].scatter([], [])
-        self.axs[0, 1].set_title("unrelated")
+        self.scatter2=self.axs[0, 1].scatter([], []) # kinetyczna liniowa
+        self.axs[0, 1].set_title("potencja")
         self.axs[0, 1].sharey(self.axs[0, 0])
 
-        self.scatter3=self.axs[1, 1].scatter([], [])
+        self.scatter3=self.axs[1, 1].scatter([], []) # kinetyczna slupkowa
         self.axs[1, 1].sharey(self.axs[0, 0])
-        self.axs[1, 1].set_title("also unrelated")
+        self.axs[1, 1].set_title("kinetyczna")
 
         self.axs[0, 0].grid(True)
         self.axs[0, 1].grid(True)
@@ -264,6 +272,7 @@ class klasa_cokolwiek(tk.Frame):
         self.start_but = tk.Button(self,text=f"Start experiment",command = lambda: self.start(), font=("Arial", fontSize))
         self.start_but["state"]= "disabled"
         self.stop_but = tk.Button(self,text=f"STOP",command = lambda: self.stop(),fg="red", font=("Arial", fontSize))
+        self.clear_plot_but = tk.Button(self,text=f"Clear plot",command = lambda: self.clear_plot(), font=("Arial", fontSize))
         
 
         self.ball = self.animacjaBox.create_oval(250-self.RADIUS, 100-self.RADIUS, 250+self.RADIUS, 100+self.RADIUS, fill='blue')
@@ -297,6 +306,7 @@ class klasa_cokolwiek(tk.Frame):
         self.set_but.place(anchor=tk.NW,x=1650,y=310,width=200,height=60)
         self.start_but.place(x=1650,y=390,anchor=tk.NW,width=200,height=60)
         self.stop_but.place(x=1650,y=470,anchor=tk.NW,width=200,height=60)
+        self.clear_plot_but.place(x=1650,y=550,anchor=tk.NW,width=200,height=60)
 
 
 if __name__ == "__main__":
