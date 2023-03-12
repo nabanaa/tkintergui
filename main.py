@@ -1,9 +1,7 @@
 import tkinter as tk
 import math
-
 import tkinter.ttk as ttk
 from tkinter import font as tkfont
-
 import os, sys
 import threading
 import multiprocessing
@@ -13,7 +11,8 @@ import time
 import datetime
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-
+from matplotlib.animation import FuncAnimation
+from functools import partial
 
 
 class StopThread(StopIteration):
@@ -72,44 +71,29 @@ class klasa_cokolwiek(tk.Frame):
         self.parent = parent
         self.controller = controller
         self.address = address
-
         self.c = tk.Canvas(self, width=1890, height=1050, highlightthickness=5, bg="#8F8F8F")
         self.c.place(x=0, y=0)
         self.ready = False
-
-        self.LENGTH = 300  # Długość nici wahadła
+        self.LENGTH = 125  # Długość nici wahadła
         self.RADIUS = 5  # Promień kuli wahadła
         self.GRAVITY = 0.981  # Przyspieszenie ziemskie
         self.czas = [x for x in range(0, 100000)]
         self.kat_poczatkowy = math.pi / 4
         self.theta = self.kat_poczatkowy * math.cos(math.sqrt(self.GRAVITY / self.LENGTH) * self.czas[0])
-        self.x0 = 250
+        self.x0 = 240
         self.y0 = 10
-
+        self.__xtimer = 0
+        self.__xtimer2 = 0
+        self.__xtimer3 = 0
+        self.__xtimer4 = 0
+        self.wartosci_kinetyczna = [0]
+        self.wartosci_potencjalna = [0]
         self.start_time = tk.StringVar(self, "0", "my_Var")
         self.stop_time = tk.StringVar(self, "0", "my_Var2")
         self.window()
 
-    def randomuj(self, num=10000):
-        if self.ready:
-            self.start_but["state"] = "disabled"
-
-            #time.sleep(1)
-            i = 0
-            self.__xtimer = time.time()
-            ttt = 1
-            while (i < num):
-                #time.sleep(0.0001)
-                self.dodaj_ptk(ttt)
-                ttt += 1
-                i += 1
-            self.ready = False
-
-        else:
-            print("you should set parameters")
-
     def start(self):
-        self.t = Thread2(target=self.randomuj, args=())
+        self.t = Thread2(target=self.dodaj_pkt, args=())
         self.t.daemon = True
         self.t.start()
         self.set_but["state"] = "disabled"
@@ -117,8 +101,6 @@ class klasa_cokolwiek(tk.Frame):
     def clear_plot(self):
         self.scatter0.set_offsets(np.c_[[], []])
         self.scatter1.set_offsets(np.c_[[], []])
-        self.scatter2.set_offsets(np.c_[[], []])
-        self.scatter3.set_offsets(np.c_[[], []])
         self.canvas.draw()
 
     def p_grid(self):
@@ -139,63 +121,49 @@ class klasa_cokolwiek(tk.Frame):
         self.clear_plot()
         self.canvas.draw()
 
-    def dodaj_ptk(self, ttt):
-        t = math.sin(ttt)
-        x = self.scatter0.get_offsets()[:, 0].tolist()
-        y = self.scatter0.get_offsets()[:, 1].tolist()
-        z = self.scatter2.get_offsets()[:, 1].tolist()
-        if len(x) == 0:
-            x.append(0)
-        elif len(x)<15:
-            x.append(time.time() - self.__xtimer)
-        else:
-            y.pop(0)
-            z.pop(0)
-            x.pop(0)
-            x.append(time.time() - self.__xtimer)
-        y.append(t)
-        z.append(-t)
-        xx = np.c_[x, y]
-        yy = np.c_[x, z]
-        self.scatter0.set_offsets(xx)
-        # self.axs[1, 0].bar(x, y, width=1)
-        self.scatter2.set_offsets(xx)
-        # self.scatter3.set_offsets(yy)
-        self.axs[0].set_xlim(x[-1]-5, x[-1] + 1)
-        self.axs[1].set_xlim(x[-1]-5, x[-1] + 1)
-        # self.axs[1, 0].set_xlim(x[-1], x[-1])
-        # self.axs[1, 1].set_xlim(x[-1]-5, x[-1] + 1)
-        self.canvas.draw()
-        return t
+    def dodaj_pkt(self):
+        self.start_but["state"] = "disabled"
+        for k in range(1000):
+            for u in range(10):
+                czas = self.scatter0.get_offsets()[:, 0].tolist()
+                self.wartosci_kinetyczna = self.scatter0.get_offsets()[:, 1].tolist()
+                self.wartosci_potencjalna = self.scatter1.get_offsets()[:, 1].tolist()
+                if len(czas) == 0:
+                    czas.append(0)
+                else:
+                    czas.append(time.time() - self.__xtimer)
+                zmi = np.sin(time.time() * 7)
+                self.wartosci_kinetyczna.append(zmi)
+                self.wartosci_potencjalna.append(-zmi)
+                xx = np.c_[czas, self.wartosci_kinetyczna]
+                yy = np.c_[czas, self.wartosci_potencjalna]
+                self.scatter0.set_offsets(xx)
+                self.scatter1.set_offsets(yy)
+                self.axs[0].set_xlim(czas[-1] - 3, czas[-1] + 1)
+                self.axs[1].set_xlim(czas[-1] - 3, czas[-1] + 1)
+
+            self.wartosci_potencjalna = self.wartosci_potencjalna[11:]
+            czas = czas[11:]
+            self.wartosci_kinetyczna = self.wartosci_kinetyczna[11:]
+            self.canvas.draw()
 
     def plot_Energia(self):
-        self.fig = Figure(figsize=(1, 1))
-        self.axs = self.fig.subplots(1, 2)
-        self.scatter0 = self.axs[0].scatter([], [], lw=2)  # potencjalna liniowa
+        self.fig = Figure(figsize=(2, 1))
+        self.axs = self.fig.subplots(2, 1)
+        self.scatter0 = self.axs[0].scatter([], [])  # potencjalna liniowa
         self.axs[0].set_title("potencja")
         self.axs[0].set_ylim(-2, 2)
 
-        # self.scatter1 = self.axs[1, 0].bar(1, [])  # potencjalna slupkowa
-        # self.axs[1, 0].set_title("kinetyczna")
-        # self.axs[1, 0].sharey(self.axs[0, 0])
-
-        self.scatter2 = self.axs[1].scatter([], [])  # kinetyczna liniowa
+        self.scatter1 = self.axs[1].scatter([], [])  # kinetyczna liniowa
         self.axs[1].set_title("potencja")
         self.axs[1].sharey(self.axs[0])
-        #
-        # self.scatter3 = self.axs[1, 1].scatter([], [])  # kinetyczna slupkowa
-        # self.axs[1, 1].sharey(self.axs[0, 0])
-        # self.axs[1, 1].set_title("kinetyczna")
 
         self.axs[0].grid(True)
         self.axs[1].grid(True)
-        # self.axs[1, 0].grid(True)
-        # self.axs[1, 1].grid(True)
-        # self.fig.tight_layout()
         self.fig.subplots_adjust(bottom=0.20)
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().place(x=120, y=150, width=1500, height=600)
+        self.canvas.get_tk_widget().place(x=120, y=150, width=750, height=600)
 
     def animacja(self, angle, time):
 
@@ -207,8 +175,31 @@ class klasa_cokolwiek(tk.Frame):
         self.new_angle = self.theta * math.cos(math.sqrt(self.GRAVITY / self.LENGTH) * time[0])
         time = time[1:]
         self.after(35, self.animacja, self.new_angle, time)
-
+        self.slupekBox.coords(self.kinetyczna, 75, 200-(self.wartosci_kinetyczna[-1]*150), 230, 270)
+        self.slupekBox.coords(self.potencjalna, 270, 200 - (self.wartosci_potencjalna[-1] * 150), 415, 270)
         # Definicje przyciskow
+
+    # def rectangle_animation(self):
+    #     # canvas = self.slupekBox
+    #     # canvas.pack()
+    #     rect1 = None
+    #     rect2 = None
+    #     value1 = 0
+    #     value2 = 0
+    #
+    #     def animate():
+    #         nonlocal rect1, rect2, value1, value2
+    #         value1 += 1
+    #         value2 += 2
+    #         if rect1:
+    #             self.slupekBox.delete(rect1)
+    #         if rect2:
+    #             self.slupekBox.delete(rect2)
+    #         rect1 = self.slupekBox.create_rectangle(160, 450 - value1, 210, 470, fill="red")
+    #         rect2 = self.slupekBox.create_rectangle(100, 450 - value2, 150, 470, fill="blue")
+    #         self.after(50, animate)
+    #
+    #     animate()
 
     def window(self):
         """look and feel"""
@@ -220,32 +211,30 @@ class klasa_cokolwiek(tk.Frame):
         self.EnergiaKinetyczna = tk.Label(self, text=f"Energia Kinetyczna = ", font=("Arial", fontSize))
         self.Predkosc = tk.Label(self, text=f"Predkosc = ", font=("Arial", fontSize))
         self.Przyspieszenie = tk.Label(self, text=f"Przyspieszenie = ", font=("Arial", fontSize))
-        self.dlugosc = tk.Label(self, text=f"Podaj dlugosc ", font=("Arial", fontSize))
-        self.waga = tk.Label(self, text=f"Podaj wage ", font=("Arial", fontSize))
-        self.autorzy = tk.Label(self, text=f"marcin, blazej", font=("Arial", fontSize))
+        self.autorzy = tk.Label(self, text=f"Autorzy: \n mgr inż. Karol Liszka \n Marcin Partyka \n Błażej Pietryja", font=("Arial", fontSize))
         self.animacjaBox = tk.Canvas(self, width=500, height=400, bg="white")
         self.set_but = tk.Button(self, text=f"unlock start button", command=lambda: self.set_params(),
                                  font=("Arial", fontSize))
-        self.start_but = tk.Button(self, text=f"Start experiment", command=lambda: self.start(),
-                                   font=("Arial", fontSize))
+        self.start_but = tk.Button(self, text=f"Start experiment", command=lambda: self.start(), font=("Arial", fontSize))
         self.start_but["state"] = "disabled"
         self.stop_but = tk.Button(self, text=f"STOP", command=lambda: self.stop(), fg="red", font=("Arial", fontSize))
-        self.clear_plot_but = tk.Button(self, text=f"Clear plot", command=lambda: self.clear_plot(),
-                                        font=("Arial", fontSize))
-
+        self.clear_plot_but = tk.Button(self, text=f"Clear plot", command=lambda: self.clear_plot(), font=("Arial", fontSize))
+        self.slupekBox = tk.Canvas(self, width=500, height=400, bg="white")
         self.ball = self.animacjaBox.create_oval(250 - self.RADIUS, 100 - self.RADIUS, 250 + self.RADIUS,
                                                  100 + self.RADIUS, fill='blue')
         self.ceil = self.animacjaBox.create_rectangle(230, 10, 270, 11, fill='black')
         self.rod = self.animacjaBox.create_line(250, 10, 250, 310)
+        self.kinetyczna_label= tk.Label(self.slupekBox, text='Energia Kinetyczna', bg='white')
+        self.potencjalna_label = tk.Label(self.slupekBox, text='Energia Potencjalna', bg='white')
+        self.slupekBox.create_window(150, 10, window=self.kinetyczna_label)
+        self.slupekBox.create_window(340, 10, window=self.potencjalna_label)
+        self.kinetyczna = self.slupekBox.create_rectangle(75, 200, 230, 270, fill='blue')
+        self.potencjalna = self.slupekBox.create_rectangle(270, 200, 415, 270, fill='orange')
 
+        # self.animate()
         self.animacja(self.theta, self.czas)
         self.plot_Energia()
-        # self.plot_Energia('2', 0, 1)
-        # self.plot_Energia('3', 1, 0)
-        # self.plot_Energia('4', 1, 1)
         self.__place_all()
-
-        # Rozmieszczenie przyciskow
 
     def __place_all(self):
         self.name_label.place(anchor=tk.NW, x=10, y=10, width=1900, height=30)
@@ -259,9 +248,8 @@ class klasa_cokolwiek(tk.Frame):
         self.EnergiaKinetyczna.place(anchor=tk.NW, x=UpXpos + 900, y=UpYpos, width=Upwidth, height=Upheight)
         self.Predkosc.place(anchor=tk.NW, x=UpXpos + 1200, y=UpYpos, width=Upwidth, height=Upheight)
         self.Przyspieszenie.place(anchor=tk.NW, x=UpXpos + 1500, y=UpYpos, width=Upwidth, height=Upheight)
-        self.dlugosc.place(anchor=tk.NW, x=40, y=800, width=200, height=50)
-        self.waga.place(anchor=tk.NW, x=40, y=900, width=200, height=50)
-        self.animacjaBox.place(anchor=tk.NW, x=700, y=750, width=500, height=320)
+        self.animacjaBox.place(anchor=tk.NW, x=1000, y=150, width=500, height=280)
+        self.slupekBox.place(anchor=tk.NW, x=1000, y=470, width=500, height=280)
         self.autorzy.place(anchor=tk.NW, x=1600, y=820, width=200, height=100)
         self.set_but.place(anchor=tk.NW, x=1650, y=310, width=200, height=60)
         self.start_but.place(x=1650, y=390, anchor=tk.NW, width=200, height=60)
