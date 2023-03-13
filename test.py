@@ -1,38 +1,29 @@
-from tkinter import *
-import math
+def dodaj_pkt(self, x=generuj_sinusa()[0], y=x=
 
 
-LENGTH = 300 # Długość nici wahadła
-RADIUS = 10   # Promień kuli wahadła
-GRAVITY = 9.81 # Przyspieszenie ziemskie
-czas=[x for x in range(0, 100000)]
-kat_poczatkowy=math.pi/4
-theta=kat_poczatkowy*math.cos(math.sqrt(GRAVITY/LENGTH)*czas[0])
-x0=250
-y0=10
-# Inicjalizacja okna Tkinter
-root = Tk()
-root.title("Animacja wahadła")
+    generuj_sinusa()[1]):
+self.start_but["state"] = "disabled"
+for k in range(100):
+    for u in range(120):
+        czas = self.scatter0.get_offsets()[:, 0].tolist()
+        self.wartosci_kinetyczna = self.scatter0.get_offsets()[:, 1].tolist()
+        self.wartosci_potencjalna = self.scatter1.get_offsets()[:, 1].tolist()
+        if len(czas) == 0:
+            czas.append(0)
+        else:
+            czas.append(time.time() - self.__xtimer)
+        zmi = np.sin(time.time() * 7)
+        self.wartosci_kinetyczna.append(zmi)
+        self.wartosci_potencjalna.append(-zmi)
+        xx = np.c_[czas, self.wartosci_kinetyczna]
+        yy = np.c_[czas, self.wartosci_potencjalna]
+        self.scatter0.set_offsets(xx)
+        self.scatter1.set_offsets(yy)
 
-# Ustawienia dla płótna, na którym będzie rysowane wahadło
-canvas = Canvas(root, width=500, height=400, bg='white')
-canvas.pack()
+        self.axs[0].set_xlim(czas[-1] - 3, czas[-1] + 1)
+        self.axs[1].set_xlim(czas[-1] - 3, czas[-1] + 1)
+    self.wartosci_potencjalna = self.wartosci_potencjalna[11:]
+    czas = czas[11:]
+    self.wartosci_kinetyczna = self.wartosci_kinetyczna[11:]
 
-# Utworzenie kuli reprezentującej wahadło
-ball = canvas.create_oval(250-RADIUS, 100-RADIUS, 250+RADIUS, 100+RADIUS, fill='blue')
-ceil = canvas.create_rectangle(230, 10, 270, 11, fill='black')
-rod = canvas.create_line(250, 10, 250, 310)
-# Funkcja do rysowania wahadła w nowej pozycji
-def animate(angle, time):
-    x=x0+LENGTH*math.sin(angle)
-    y=y0+LENGTH*math.cos(angle)
-    canvas.coords(ball, x - RADIUS, y - RADIUS, x + RADIUS, y + RADIUS)
-    canvas.coords(rod, 250, 10, x, y)
-    new_angle = theta * math.cos(math.sqrt(GRAVITY / LENGTH) * time[0])
-    time=time[1:]
-    root.after(50, animate, new_angle, time)
-
-animate(theta, czas)
-
-# Uruchomienie pętli głównej programu
-root.mainloop()
+    self.canvas.draw()
